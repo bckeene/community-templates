@@ -1,0 +1,341 @@
+apiVersion: influxdata.com/v2alpha1
+kind: Label
+metadata:
+    name: suspicious-newton-fd1001
+spec:
+    color: '#009f5f'
+    name: OSS Monitoring
+---
+apiVersion: influxdata.com/v2alpha1
+kind: Bucket
+metadata:
+    name: blissful-borg-fd1005
+spec:
+    associations:
+      - kind: Label
+        name: suspicious-newton-fd1001
+    name: metrics
+    retentionRules:
+      - everySeconds: 259200
+        type: expire
+---
+apiVersion: influxdata.com/v2alpha1
+kind: Dashboard
+metadata:
+    name: keen-haslett-7d1001
+spec:
+    associations:
+      - kind: Label
+        name: suspicious-newton-fd1001
+    charts:
+      - axes:
+          - base: "10"
+            name: x
+            scale: linear
+          - base: "2"
+            label: MB
+            name: "y"
+            scale: linear
+        colorizeRows: true
+        colors:
+          - hex: '#00A3FF'
+            id: 2b8a5d61-44f8-4108-a690-783a2d8c5288
+            name: Solid Blue
+            type: scale
+          - hex: '#00A3FF'
+            id: dd831b3e-96c6-4c28-9d16-cfe18a0b3406
+            name: Solid Blue
+            type: scale
+          - hex: '#00A3FF'
+            id: 7251fcfc-9da0-4942-88a4-dffcce9861b5
+            name: Solid Blue
+            type: scale
+        geom: step
+        height: 4
+        hoverDimension: auto
+        kind: Xy
+        legendColorizeRows: true
+        legendOpacity: 1
+        legendOrientationThreshold: 1e+08
+        name: Data-In (MB ingested per hour)
+        opacity: 1
+        orientationThreshold: 1e+08
+        position: overlaid
+        queries:
+          - query: |-
+                //Data-In (volume in MB) grouped by 60m
+                from(bucket: "metrics")
+                  |> range(start: -3d, stop: now())
+                  |> filter(fn: (r) => r["_measurement"] == "http_write_request_bytes")
+                  |> filter(fn: (r) => r["_field"] == "counter")
+                  |> filter(fn: (r) => r["endpoint"] == "/api/v2/write")
+                  |> map(fn: (r) => ({ r with _value: r._value / 1000000.0 }))
+                  |> difference(nonNegative: true)
+                  |> aggregateWindow(every: 60m, fn: sum)
+        staticLegend:
+            colorizeRows: true
+            opacity: 1
+            orientationThreshold: 1e+08
+            widthRatio: 1
+        width: 6
+        widthRatio: 1
+        xCol: _time
+        yCol: _value
+      - axes:
+          - base: "10"
+            name: x
+            scale: linear
+          - base: "2"
+            label: Query Count
+            name: "y"
+            scale: linear
+        colorizeRows: true
+        colors:
+          - hex: '#34BB55'
+            id: 7b975839-a213-4c55-8e18-a1a1d86507d2
+            name: Solid Green
+            type: scale
+          - hex: '#34BB55'
+            id: 7333f4e8-970b-414e-8c94-54a547823770
+            name: Solid Green
+            type: scale
+          - hex: '#34BB55'
+            id: b203a74a-7c57-4b40-9cb5-a750d260278d
+            name: Solid Green
+            type: scale
+        geom: step
+        height: 4
+        hoverDimension: auto
+        kind: Xy
+        legendColorizeRows: true
+        legendOpacity: 1
+        legendOrientationThreshold: 1e+08
+        name: Query Count (number of queries per hour)
+        opacity: 1
+        orientationThreshold: 1e+08
+        position: overlaid
+        queries:
+          - query: |-
+                //Query Count grouped by 60m
+                from(bucket: "metrics")
+                  |> range(start: -3d, stop: now())
+                  |> filter(fn: (r) => r["_measurement"] == "http_query_request_count")
+                  |> filter(fn: (r) => r["_field"] == "counter")
+                  |> filter(fn: (r) => r["endpoint"] == "/api/v2/query")
+                  |> difference(nonNegative: true)
+                  |> aggregateWindow(every: 60m, fn: sum)
+        staticLegend:
+            colorizeRows: true
+            opacity: 1
+            orientationThreshold: 1e+08
+            widthRatio: 1
+        width: 6
+        widthRatio: 1
+        xCol: _time
+        yCol: _value
+        yPos: 4
+      - axes:
+          - base: "10"
+            name: x
+            scale: linear
+          - base: "2"
+            label: GB
+            name: "y"
+            scale: linear
+        colorizeRows: true
+        colors:
+          - hex: '#8F8AF4'
+            id: b70345b0-fe9a-4a80-8de1-1973345828b4
+            name: Do Androids Dream of Electric Sheep?
+            type: scale
+          - hex: '#A51414'
+            id: 70f88ab0-55ae-49f1-a575-8c54970130f7
+            name: Do Androids Dream of Electric Sheep?
+            type: scale
+          - hex: '#F4CF31'
+            id: e5d43b64-eb36-46ba-8a35-4e468a55aca1
+            name: Do Androids Dream of Electric Sheep?
+            type: scale
+        geom: line
+        height: 4
+        hoverDimension: auto
+        kind: Xy
+        legendColorizeRows: true
+        legendOpacity: 1
+        legendOrientationThreshold: 1e+08
+        name: Stoage Volume/Trends
+        opacity: 1
+        orientationThreshold: 1e+08
+        position: overlaid
+        queries:
+          - query: |-
+                from(bucket: "metrics")
+                  |> range(start: -3d, stop: now())
+                  |> filter(fn: (r) => r["_measurement"] == "storage_shard_disk_size")
+                  |> map(fn: (r) => ({ r with _value: r._value / 1000000000.0}))
+        staticLegend:
+            colorizeRows: true
+            opacity: 1
+            orientationThreshold: 1e+08
+            widthRatio: 1
+        width: 6
+        widthRatio: 1
+        xCol: _time
+        yCol: _value
+        yPos: 8
+      - axes:
+          - base: "10"
+            name: x
+            scale: linear
+          - base: "2"
+            label: Write Requests
+            name: "y"
+            scale: linear
+        colorizeRows: true
+        colors:
+          - hex: '#DC4E58'
+            id: 125b0afd-58f6-495b-a8a7-49a3ba87c484
+            name: Solid Red
+            type: scale
+          - hex: '#DC4E58'
+            id: 3fef208a-1fdd-4ca4-8357-b091600b2f0a
+            name: Solid Red
+            type: scale
+          - hex: '#DC4E58'
+            id: 84cc1b7f-024a-416d-b921-0b2216ac442f
+            name: Solid Red
+            type: scale
+        geom: step
+        height: 4
+        hoverDimension: auto
+        kind: Xy
+        legendColorizeRows: true
+        legendOpacity: 1
+        legendOrientationThreshold: 1e+08
+        name: Data-In (write events per hour)
+        opacity: 1
+        orientationThreshold: 1e+08
+        position: overlaid
+        queries:
+          - query: |-
+                //Data-In (number of HTTP requests) grouped by 60m
+                from(bucket: "metrics")
+                  |> range(start: -3d, stop: now())
+                  |> filter(fn: (r) => r["_measurement"] == "http_write_request_count")
+                  |> filter(fn: (r) => r["_field"] == "counter")
+                  |> difference(nonNegative: true)
+                  |> aggregateWindow(every: 60m, fn: sum)
+        staticLegend:
+            colorizeRows: true
+            opacity: 1
+            orientationThreshold: 1e+08
+            widthRatio: 1
+        width: 6
+        widthRatio: 1
+        xCol: _time
+        xPos: 6
+        yCol: _value
+      - axes:
+          - base: "10"
+            name: x
+            scale: linear
+          - base: "2"
+            label: MB
+            name: "y"
+            scale: linear
+        colorizeRows: true
+        colors:
+          - hex: '#BE2EE4'
+            id: f6c26814-cc49-49e8-bf3d-b1f6ff654de5
+            name: Solid Purple
+            type: scale
+          - hex: '#BE2EE4'
+            id: 2b2ac34c-53e8-4be5-9b1c-33afbc23562c
+            name: Solid Purple
+            type: scale
+          - hex: '#BE2EE4'
+            id: 411929b9-a738-414d-bf50-054db56cb605
+            name: Solid Purple
+            type: scale
+        geom: step
+        height: 4
+        hoverDimension: auto
+        kind: Xy
+        legendColorizeRows: true
+        legendOpacity: 1
+        legendOrientationThreshold: 1e+08
+        name: Data-out (MB per hour)
+        opacity: 1
+        orientationThreshold: 1e+08
+        position: overlaid
+        queries:
+          - query: |-
+                //Data-out (volume in MB) grouped by 60m
+                from(bucket: "metrics")
+                  |> range(start: -3d, stop: now())
+                  |> filter(fn: (r) => r["_measurement"] == "http_query_request_bytes")
+                  |> filter(fn: (r) => r["_field"] == "counter")
+                  |> map(fn: (r) => ({ r with _value: r._value / 1000000.0 }))
+                  |> difference(nonNegative: true)
+                  |> aggregateWindow(every: 60m, fn: sum)
+        staticLegend:
+            colorizeRows: true
+            opacity: 1
+            orientationThreshold: 1e+08
+            widthRatio: 1
+        width: 6
+        widthRatio: 1
+        xCol: _time
+        xPos: 6
+        yCol: _value
+        yPos: 4
+      - axes:
+          - base: "10"
+            name: x
+            scale: linear
+          - base: "2"
+            name: "y"
+            scale: linear
+        colorizeRows: true
+        colors:
+          - hex: '#31C0F6'
+            id: ec700871-1d46-4126-8a27-12d7784c5a2a
+            name: Nineteen Eighty Four
+            type: scale
+          - hex: '#A500A5'
+            id: 5192ccb3-ce22-4f0d-b3e1-3a6b2b907b68
+            name: Nineteen Eighty Four
+            type: scale
+          - hex: '#FF7E27'
+            id: 0d6673fd-edb9-4913-8de5-1dc77f3afd66
+            name: Nineteen Eighty Four
+            type: scale
+        geom: line
+        height: 4
+        hoverDimension: auto
+        kind: Xy
+        legendColorizeRows: true
+        legendOpacity: 1
+        legendOrientationThreshold: 1e+08
+        name: Cardinality
+        opacity: 1
+        orientationThreshold: 1e+08
+        position: overlaid
+        queries:
+          - query: |-
+                from(bucket: "metrics")
+                  |> range(start: -3d, stop: now())
+                  |> filter(fn: (r) => r["_measurement"] == "storage_bucket_series_num")
+                  |> filter(fn: (r) => r["_field"] == "gauge")
+        staticLegend:
+            colorizeRows: true
+            opacity: 1
+            orientationThreshold: 1e+08
+            widthRatio: 1
+        width: 6
+        widthRatio: 1
+        xCol: _time
+        xPos: 6
+        yCol: _value
+        yPos: 8
+    name: InfluxDB (open source usage metrics)

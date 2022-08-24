@@ -88,6 +88,7 @@ Start by reading [how to use a template](docs/use_a_template.md), then check eac
 | [Windows System Monitor](windows_system/) | Monitor system resources on one or more Windows hosts. | [@russorat](https://github.com/russorat) |
 | [x509](x509/) | Simple dashboard for monitoring SSL certificates expiration. | [Ignacio Van Droogenbroeck](https://github.com/xe-nvdk) |
 | [Zookeeper](zookeeper/) | Dashboard for consuming data from Zookeeper client. | [Ignacio Van Droogenbroeck](https://github.com/xe-nvdk) |
+| [InfluxDB 2 OSS Pricing etrics](influxdb2_oss_metrics/) | Monitor your InfluxDB 2 OSS usage metrics for migration to InfluxDB Cloud. | [@bckeene](https://github.com/bckeene) |
 
 To submit a new template, see our [contributing guide](docs/submit_a_template.md).
 
